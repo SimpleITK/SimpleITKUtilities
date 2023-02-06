@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "SimpleITKExtra"
+version = "0.0.1"
+authors = [
+  { name="Bradley Lowekamp", email="blowekamp@mail.nih.gov" },
+]
+description = "A collection of utilities and integration tools to enhance SimpleITK."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[tool.setuptools]
+packages = ["SimpleITK.extra"]
+
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
