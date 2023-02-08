@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "SimpleITKExtra"
+name = "SimpleITKUtilities"
 version = "0.0.1"
 authors = [
   { name="Bradley Lowekamp", email="blowekamp@mail.nih.gov" },
@@ -19,7 +19,7 @@ classifiers = [
 dynamic = ["dependencies"]
 
 [tool.setuptools]
-packages = ["SimpleITK.extra"]
+packages = ["SimpleITK.utilities"]
 
 
 [tool.setuptools.dynamic]

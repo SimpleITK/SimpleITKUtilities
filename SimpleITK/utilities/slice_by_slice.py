@@ -37,7 +37,7 @@ def slice_by_slice(func):
     iter_dim = 2
 
     @wraps(func)
-    def slice_by_slice(image, *args, **kwargs):
+    def _slice_by_slice(image, *args, **kwargs):
         dim = image.GetDimension()
 
         if dim <= iter_dim:
@@ -71,4 +71,4 @@ def slice_by_slice(func):
 
         return image
 
-    return slice_by_slice
+    return _slice_by_slice

@@ -36,7 +36,7 @@ def make_isotropic(
         image (SimpleITK.Image): Input image.
         interpolator: By default the function uses a linear interpolator. For
                       label images one should use the sitkNearestNeighbor interpolator
-                      so as not to introduce non-existant labels.
+                      so as not to introduce non-existent labels.
         spacing (float): Desired spacing. If none given then use the smallest spacing from
                          the original image.
         default_value (image.GetPixelID): Desired pixel value for resampled points that fall
@@ -44,7 +44,7 @@ def make_isotropic(
                                           when image is CT).
         standardize_axes (bool): If the original image axes were not the standard ones, i.e. non
                                  identity cosine matrix, we may want to resample it to have standard
-                                 axes. To do that, set this paramter to True.
+                                 axes. To do that, set this parameter to True.
     Returns:
         SimpleITK.Image with isotropic spacing which occupies the same region in space as
         the input image.
