@@ -22,12 +22,7 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: 3.11
-    - name: set PY
-      run: echo "PY=$(python -VV | sha256sum | cut -d' ' -f1)" >> $GITHUB_ENV
-    - uses: actions/cache@v3
-      with:
-        path: ~/.cache/pre-commit
-        key: pre-commit|${{ env.PY }}|${{ hashFiles('.pre-commit-config.yaml') }}
+        cache: 'pip'
     - name: Linting with pre-commit
       run: |
         python -m pip install pre-commit
@@ -44,6 +39,12 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
