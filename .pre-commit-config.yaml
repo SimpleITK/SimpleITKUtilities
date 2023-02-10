@@ -14,7 +14,7 @@ repos:
      args: ['--maxkb=200']
    - id: detect-private-key
 - repo: https://github.com/psf/black
-  rev: 22.6.0
+  rev: 23.1.0
   hooks: # check conformance to black formatting
    - id: black
      args: ['--check'] # if run without arguments, will fail and will format the files
