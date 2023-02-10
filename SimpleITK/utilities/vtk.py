@@ -108,11 +108,11 @@ def vtk2sitk(vtkimg, debug=False):
     sitkimg.SetSpacing(spacing)
     sitkimg.SetOrigin(origin)
 
-    if vtk.vtkVersion.GetVTKMajorVersion() >= 9:
-        direction = vtkimg.GetDirectionMatrix()
-        d = []
-        for y in range(3):
-            for x in range(3):
-                d.append(direction.GetElement(y, x))
-        sitkimg.SetDirection(d)
+    direction = vtkimg.GetDirectionMatrix()
+    d = []
+    for y in range(3):
+        for x in range(3):
+            d.append(direction.GetElement(y, x))
+    sitkimg.SetDirection(d)
+
     return sitkimg

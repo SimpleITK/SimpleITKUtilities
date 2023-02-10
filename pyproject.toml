@@ -20,7 +20,7 @@ dynamic = ["dependencies"]
 
 
 [project.optional-dependencies]
-vtk=['vtk']
+vtk=['vtk>=9.0']
 
 [tool.setuptools]
 packages = ["SimpleITK.utilities"]
