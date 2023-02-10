@@ -32,22 +32,27 @@ def make_isotropic(
     Many file formats (e.g. jpg, png,...) expect the pixels to be isotropic, same
     spacing for all axes. Saving non-isotropic data in these formats will result in
     distorted images. This function makes an image isotropic via resampling, if needed.
-    Args:
-        image (SimpleITK.Image): Input image.
-        interpolator: By default the function uses a linear interpolator. For
+
+    :param image: (SimpleITK.Image): Input image.
+    :type image: SimpleITK.Image
+    :param interpolator: By default the function uses a linear interpolator. For
                       label images one should use the sitkNearestNeighbor interpolator
                       so as not to introduce non-existent labels.
-        spacing (float): Desired spacing. If none given then use the smallest spacing from
+    :param spacing: Desired spacing. If none given then use the smallest spacing from
                          the original image.
-        default_value (image.GetPixelID): Desired pixel value for resampled points that fall
+    :type spacing: float
+
+    :param default_value: Desired pixel value for resampled points that fall
                                           outside the original image (e.g. HU value for air, -1000,
                                           when image is CT).
-        standardize_axes (bool): If the original image axes were not the standard ones, i.e. non
+    :param standardize_axes: If the original image axes were not the standard ones, i.e. non
                                  identity cosine matrix, we may want to resample it to have standard
                                  axes. To do that, set this parameter to True.
-    Returns:
-        SimpleITK.Image with isotropic spacing which occupies the same region in space as
+    :type standardize_axes: bool
+
+    :return: An image with isotropic spacing which occupies the same region in space as
         the input image.
+    :rtype: SimpleITK.Image
     """
     original_spacing = image.GetSpacing()
     # Image is already isotropic, just return a copy.
