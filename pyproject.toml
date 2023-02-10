@@ -18,6 +18,10 @@ classifiers = [
 ]
 dynamic = ["dependencies"]
 
+
+[project.optional-dependencies]
+vtk=['vtk']
+
 [tool.setuptools]
 packages = ["SimpleITK.utilities"]
 

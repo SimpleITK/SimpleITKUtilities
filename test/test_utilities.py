@@ -30,3 +30,8 @@ def test_slice_by_slice():
 
     for z in range(img.GetSize()[2]):
         assert img[0, 0, z] == z
+
+
+def test_sitktovtk():
+    img = sitk.Image([10, 10, 5], sitk.sitkFloat32)
+    vtk_img = sitkutils.sitk2vtk(img)
