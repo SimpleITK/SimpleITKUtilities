@@ -20,8 +20,13 @@ from .Logger import Logger
 from .slice_by_slice import slice_by_slice
 from .make_isotropic import make_isotropic
 
+try:
+    from ._version import version as __version__
+except ImportError:
+    __version__ = "unknown version"
 
-__all__ = ["Logger", "slice_by_slice", "make_isotropic"]
+
+__all__ = ["Logger", "slice_by_slice", "make_isotropic", "__version__"]
 
 import importlib
 

@@ -1,10 +1,9 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "SimpleITKUtilities"
-version = "0.0.1"
 authors = [
   { name="Bradley Lowekamp", email="blowekamp@mail.nih.gov" },
 ]
@@ -16,7 +15,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-dynamic = ["dependencies"]
+dynamic = ["dependencies", "version"]
 
 
 [project.optional-dependencies]
@@ -28,3 +27,6 @@ packages = ["SimpleITK.utilities"]
 
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools_scm]
+write_to = "SimpleITK/utilities/_version.py"
