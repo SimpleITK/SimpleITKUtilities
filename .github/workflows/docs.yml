@@ -42,7 +42,6 @@ jobs:
         run: |
           make -C docs html
           rm docs/build/html/.buildinfo
-          touch docs/build/html/.nojekyll
 
       - name: Upload documentation
         uses: actions/upload-artifact@v3
