@@ -21,6 +21,7 @@ dynamic = ["dependencies"]
 
 [project.optional-dependencies]
 vtk=['vtk>=9.0']
+dask=['dask']
 
 [tool.setuptools]
 packages = ["SimpleITK.utilities"]
