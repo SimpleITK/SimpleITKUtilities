@@ -19,6 +19,7 @@
 from .Logger import Logger
 from .slice_by_slice import slice_by_slice
 from .make_isotropic import make_isotropic
+from .fft import fft_based_translation_initialization
 
 try:
     from ._version import version as __version__
@@ -26,7 +27,13 @@ except ImportError:
     __version__ = "unknown version"
 
 
-__all__ = ["Logger", "slice_by_slice", "make_isotropic", "__version__"]
+__all__ = [
+    "Logger",
+    "slice_by_slice",
+    "make_isotropic",
+    "fft_based_translation_initialization",
+    "__version__",
+]
 
 import importlib
 
