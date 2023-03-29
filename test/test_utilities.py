@@ -88,3 +88,46 @@ def test_overlay_bounding_boxes():
         scalar_hash == "d7dde3eee4c334ffe810a636dff872a6ded592fc"
         and rgb_hash == "d6694a394f8fcc32ea337a1f9531dda6f4884af1"
     )
+
+
+def test_resize():
+    original_image = sitk.Image([128, 128], sitk.sitkUInt8) + 50
+    resized_image = sitkutils.resize(image=original_image, new_size=[128, 128])
+    assert resized_image.GetSize() == (128, 128)
+    assert resized_image.GetSpacing() == (1.0, 1.0)
+    assert resized_image.GetOrigin() == (0.0, 0.0)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint((-0.5, -0.5)) == (
+        -0.5,
+        -0.5,
+    )
+
+    resized_image = sitkutils.resize(image=original_image, new_size=[64, 64])
+    assert resized_image.GetSize() == (64, 64)
+    assert resized_image.GetSpacing() == (2.0, 2.0)
+    assert resized_image.GetOrigin() == (0.5, 0.5)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint((-0.5, -0.5)) == (
+        -0.5,
+        -0.5,
+    )
+
+    resized_image = sitkutils.resize(
+        image=original_image, new_size=[64, 128], fill=False
+    )
+    assert resized_image.GetSize() == (64, 64)
+    assert resized_image.GetSpacing() == (2.0, 2.0)
+    assert resized_image.GetOrigin() == (0.5, 0.5)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint((-0.5, -0.5)) == (
+        -0.5,
+        -0.5,
+    )
+
+    resized_image = sitkutils.resize(
+        image=original_image, new_size=[64, 128], isotropic=False
+    )
+    assert resized_image.GetSize() == (64, 128)
+    assert resized_image.GetSpacing() == (2.0, 1.0)
+    assert resized_image.GetOrigin() == (0.5, 0.0)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint((-0.5, -0.5)) == (
+        -0.5,
+        -0.5,
+    )
