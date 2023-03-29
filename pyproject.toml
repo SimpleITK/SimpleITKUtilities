@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "SimpleITKUtilities"
 authors = [
   { name="Bradley Lowekamp", email="blowekamp@mail.nih.gov" },
+  { name="Ziv Yaniv", email="zivyaniv@nih.gov" },
 ]
 description = "A collection of utilities and integration tools to enhance SimpleITK."
 readme = "README.md"
