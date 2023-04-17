@@ -35,10 +35,10 @@ __all__ = [
     "__version__",
 ]
 
-import importlib
+from importlib.util import find_spec
 
 try:
-    importlib.util.find_spec("vtk")
+    find_spec("vtk")
     from .vtk import sitk2vtk, vtk2sitk
 
     __all__.extend(["sitk2vtk", "vtk2sitk"])
@@ -46,3 +46,5 @@ try:
     _has_vtk = True
 except ImportError:
     _has_vtk = False
+
+del find_spec
