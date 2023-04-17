@@ -17,7 +17,7 @@
 # ========================================================================
 
 import SimpleITK as sitk
-from typing import Sequence
+from typing import Sequence, Tuple
 
 
 def overlay_bounding_boxes(
@@ -25,12 +25,12 @@ def overlay_bounding_boxes(
     bounding_boxes: Sequence[Sequence[float]],
     bounding_box_format: str = "MINXY_MAXXY",
     normalized: bool = False,
-    colors: Sequence[Sequence[int]] = [],
+    colors: Sequence[int] = [],
     half_line_width: int = 0,
-) -> sitk.Image:
+) -> Tuple[sitk.Image, bool]:
     """
-    Overlay axis aligned bounding boxes on an image. The function supports several ways of specifying a
-    bounding box:
+    Overlay axis aligned bounding boxes on a 2D image. The function supports several ways of specifying a
+    bounding box using pixel indexes:
     "MINXY_MAXXY" - [min_x, min_y, max_x, max_y]
     "MINXY_WH" - [min_x, min_y, width, height]
     "CENT_WH" - [center_x, center_y, width, height]
@@ -51,10 +51,12 @@ def overlay_bounding_boxes(
     :param normalized: Indicate whether the bounding box numbers were normalized to be in [0,1].
     :type bool
     :param colors: Specify the color for each rectangle using RGB values, triplets in [0,255].
-                   Useful for visually representing different classes (relevant for object detection).
-    :type Sequence[Sequence]
+                   Useful for visually representing different classes (relevant for object detection). Most often a flat
+                   list, e.g. colors = [255, 0, 0, 0, 255, 0] reresents red, and green.
+    :type Sequence
     :param half_line_width: Plot using thicker lines.
-    :return: A SimpleITK image with rectangles plotted on it.
+    :return: A tuple where the first entry is a SimpleITK image with rectangles plotted on it and the second entry is a boolean
+             which is true if one or more of the rectangles were out of bounds, false otherwise.
     """
     # functions that convert from various bounding box representations to the [min_x, min_y, max_x, max_y] representation.
     convert_to_minxy_maxxy = {
@@ -123,7 +125,10 @@ def overlay_bounding_boxes(
         )
     if not colors:  # use a single color for all bounding boxes
         colors = [[255, 0, 0]] * len(standard_bounding_boxes)
+    else:
+        colors = [colors[i : i + 3] for i in range(0, len(colors), 3)]
     line_width = 1 + 2 * half_line_width
+    out_of_bounds = False
     for bbox, color in zip(standard_bounding_boxes, colors):
         width = bbox[2] - bbox[0]
         height = bbox[3] - bbox[1]
@@ -162,5 +167,6 @@ def overlay_bounding_boxes(
                 bbox[3] - half_line_width : bbox[3] + half_line_width + 1,  # noqa E203
             ] = horiz
         except Exception:  # Drawing outside the border of the image will cause problems
+            out_of_bounds = True
             continue
-    return overlay_image
+    return overlay_image, out_of_bounds
