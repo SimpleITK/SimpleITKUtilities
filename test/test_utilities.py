@@ -61,3 +61,30 @@ def test_fft_initialization2():
 
     tx = sitkutils.fft_based_translation_initialization(fixed_img, moving_img)
     assert tx.GetOffset() == (-85.0, -105.0)
+
+
+def test_overlay_bounding_boxes():
+    bounding_boxes = [[10, 10, 60, 20], [200, 180, 230, 250]]
+    scalar_image = sitk.Image([256, 256], sitk.sitkUInt8)
+    rgb_image = sitk.Compose([scalar_image, scalar_image, scalar_image + 255])
+
+    scalar_hash = sitk.Hash(
+        sitkutils.overlay_bounding_boxes(
+            image=scalar_image,
+            bounding_boxes=bounding_boxes,
+            bounding_box_format="MINXY_MAXXY",
+        )[0]
+    )
+    rgb_hash = sitk.Hash(
+        sitkutils.overlay_bounding_boxes(
+            image=rgb_image,
+            bounding_boxes=bounding_boxes,
+            colors=[255, 20, 147, 255, 215, 0],
+            half_line_width=1,
+            bounding_box_format="MINXY_MAXXY",
+        )[0]
+    )
+    assert (
+        scalar_hash == "d7dde3eee4c334ffe810a636dff872a6ded592fc"
+        and rgb_hash == "d6694a394f8fcc32ea337a1f9531dda6f4884af1"
+    )
