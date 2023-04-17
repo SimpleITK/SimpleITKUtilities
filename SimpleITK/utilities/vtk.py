@@ -25,10 +25,6 @@ import vtk.util.numpy_support as vtknp
 def sitk2vtk(img, debugOn=False):
     """
     Function to convert a SimpleITK image to a VTK image.
-    Written by David T. Chen from the National Institute of Allergy
-    and Infectious Diseases, dchen@mail.nih.gov.
-    It is covered by the Apache License, Version 2.0:
-    http://www.apache.org/licenses/LICENSE-2.0
     """
 
     size = list(img.GetSize())
@@ -36,8 +32,6 @@ def sitk2vtk(img, debugOn=False):
     spacing = list(img.GetSpacing())
     ncomp = img.GetNumberOfComponentsPerPixel()
     direction = img.GetDirection()
-
-    # there doesn't seem to be a way to specify the image orientation in VTK
 
     # convert the SimpleITK image to a numpy array
     i2 = sitk.GetArrayFromImage(img)
@@ -80,18 +74,14 @@ def sitk2vtk(img, debugOn=False):
     else:
         vtk_image.SetDirectionMatrix(direction)
 
-    # depth_array = numpy_support.numpy_to_vtk(i2.ravel(), deep=True,
-    #                                          array_type = vtktype)
     depth_array = numpy_support.numpy_to_vtk(i2.ravel())
     depth_array.SetNumberOfComponents(ncomp)
     vtk_image.GetPointData().SetScalars(depth_array)
 
     vtk_image.Modified()
-    #
     if debugOn:
         print("Volume object inside sitk2vtk")
         print(vtk_image)
-        #        print("type = ", vtktype)
         print("num components = ", ncomp)
         print(size)
         print(origin)
