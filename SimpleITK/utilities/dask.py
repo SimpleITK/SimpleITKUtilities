@@ -31,10 +31,10 @@ def from_sitk(filename: PathType, chunks: ChunkType = None) -> da.Array:
     SimpleITK is used to "stream read" chunks from the file if supported, otherwise the entire image will be read for
     each chunk request.ITK support full streaming includes MHA, MRC, NRRD and NIFTI file formats.
 
-    :param filename: A path-like object to the location of an image file readable by SimpleITK
-    :param chunks: Please see dask documentation on chunks of dask arrays for supported formats.  Chunk size can be tune
+    :param filename: A path-like object to the location of an image file readable by SimpleITK.
+    :param chunks: Please see dask documentation on chunks of dask arrays for supported formats. Chunk size can be tuned
         for performance based on continuously stored on disk, re-chunking, and downstream processes.
-    :return: A Dask array of the image on file
+    :return: A Dask array of the image on file.
     """
     reader = sitk.ImageFileReader()
     reader.SetFileName(str(filename))

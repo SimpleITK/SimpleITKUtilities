@@ -23,13 +23,12 @@ from functools import wraps
 
 
 def slice_by_slice(func):
-    """
-    A function decorator which executes func on each 3D sub-volume and
+    """A function decorator which executes func on each 3D sub-volume and
     *in-place* pastes the results into the input image. The input image type
     and the output image type are required to be the same type.
 
-    :param func: A function which take a SimpleITK Image as it's first
-    argument and returns an Image as results.
+    :param func: A function which takes a SimpleITK Image as it's first
+    argument and returns an Image as the result.
 
     :return: A decorated function.
     """
