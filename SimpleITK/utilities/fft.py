@@ -22,9 +22,8 @@ import SimpleITK as sitk
 def fft_based_translation_initialization(
     fixed: sitk.Image, moving: sitk.Image
 ) -> sitk.TranslationTransform:
-    """
-    Perform fast Fourier transform based normalized correlation to find the translation of the maximize correlation
-     between the images.
+    """Perform fast Fourier transform based normalized correlation to find the translation which maximizes correlation
+    between the images.
 
     If the moving image grid is not congruent with fixed image ( same origin, spacing and direction ), then it will be
     resampled onto the grid defined by the fixed image.
@@ -32,9 +31,9 @@ def fft_based_translation_initialization(
     Efficiency can be improved by reducing the resolution of the image or using a projection filter to reduce the
     dimensionality of the inputs.
 
-    :param fixed: A SimpleITK image object
+    :param fixed: A SimpleITK image object.
     :param moving: Another SimpleITK Image object, which will be resampled onto the grid of the fixed image if it is not
-    congruent.
+        congruent.
     :return: A TranslationTransform mapping physical points from the fixed to the moving image.
     """
 
