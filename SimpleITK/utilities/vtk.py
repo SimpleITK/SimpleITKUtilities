@@ -17,41 +17,40 @@
 # ========================================================================
 
 import SimpleITK as sitk
+import logging
 import vtk
-from vtk.util import numpy_support
 import vtk.util.numpy_support as vtknp
 
+logger = logging.getLogger(__name__)
 
-def sitk2vtk(img, debugOn=False):
+
+def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
+    """Convert a 2D or 3D SimpleITK image to a VTK image. VTK versions prior to
+    version 9 do not support a direction cosine matrix. If the installed
+    version is lower than that, the direction cosine matrix is ignored and
+    that information is lost. A warning is issued using the Python
+    logging mechanism.
+
+    :param image: Image to convert.
+    :return: A VTK image.
     """
-    Function to convert a SimpleITK image to a VTK image.
-    """
 
-    size = list(img.GetSize())
-    origin = list(img.GetOrigin())
-    spacing = list(img.GetSpacing())
-    ncomp = img.GetNumberOfComponentsPerPixel()
-    direction = img.GetDirection()
+    size = list(image.GetSize())
+    if len(size) > 3:
+        raise ValueError(
+            "Conversion only supports 2D and 3D images, got {len(size)}D image"
+        )
 
-    # convert the SimpleITK image to a numpy array
-    i2 = sitk.GetArrayFromImage(img)
-    if debugOn:
-        i2_string = i2.tostring()
-        print("data string address inside sitk2vtk", hex(id(i2_string)))
+    origin = image.GetOrigin()
+    spacing = image.GetSpacing()
+    direction = image.GetDirection()
+    ncomp = image.GetNumberOfComponentsPerPixel()
 
-    vtk_image = vtk.vtkImageData()
-
-    # VTK expects 3-dimensional parameters
+    # VTK expects 3-dimensional image parameters
     if len(size) == 2:
         size.append(1)
-
-    if len(origin) == 2:
-        origin.append(0.0)
-
-    if len(spacing) == 2:
-        spacing.append(spacing[0])
-
-    if len(direction) == 4:
+        origin = origin + (0.0,)
+        spacing = spacing + (1.0,)
         direction = [
             direction[0],
             direction[1],
@@ -64,63 +63,50 @@ def sitk2vtk(img, debugOn=False):
             1.0,
         ]
 
+    # Create VTK image and set its metadata
+    vtk_image = vtk.vtkImageData()
     vtk_image.SetDimensions(size)
     vtk_image.SetSpacing(spacing)
     vtk_image.SetOrigin(origin)
     vtk_image.SetExtent(0, size[0] - 1, 0, size[1] - 1, 0, size[2] - 1)
-
     if vtk.vtkVersion.GetVTKMajorVersion() < 9:
-        print("Warning: VTK version <9.  No direction matrix.")
+        logger.warning(
+            "VTK version <9 does not support direction matrix which is ignored"
+        )
     else:
         vtk_image.SetDirectionMatrix(direction)
 
-    depth_array = numpy_support.numpy_to_vtk(i2.ravel())
+    # Set pixel data
+    depth_array = vtknp.numpy_to_vtk(sitk.GetArrayViewFromImage(image).ravel())
     depth_array.SetNumberOfComponents(ncomp)
     vtk_image.GetPointData().SetScalars(depth_array)
 
     vtk_image.Modified()
-    if debugOn:
-        print("Volume object inside sitk2vtk")
-        print(vtk_image)
-        print("num components = ", ncomp)
-        print(size)
-        print(origin)
-        print(spacing)
-        print(vtk_image.GetScalarComponentAsFloat(0, 0, 0, 0))
-
     return vtk_image
 
 
-def vtk2sitk(vtkimg, debug=False):
-    """Takes a VTK image, returns a SimpleITK image."""
-    sd = vtkimg.GetPointData().GetScalars()
+def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
+    """Convert a VTK image to a  SimpleITK image.
+
+    :param image: Image to convert.
+    :return: A SimpleITK image.
+    """
+    sd = image.GetPointData().GetScalars()
     npdata = vtknp.vtk_to_numpy(sd)
-
-    dims = list(vtkimg.GetDimensions())
-    origin = vtkimg.GetOrigin()
-    spacing = vtkimg.GetSpacing()
-
-    if debug:
-        print("dims:", dims)
-        print("origin:", origin)
-        print("spacing:", spacing)
-
-        print("numpy type:", npdata.dtype)
-        print("numpy shape:", npdata.shape)
-
+    dims = list(image.GetDimensions())
     dims.reverse()
     npdata.shape = tuple(dims)
-    if debug:
-        print("new shape:", npdata.shape)
-    sitkimg = sitk.GetImageFromArray(npdata)
-    sitkimg.SetSpacing(spacing)
-    sitkimg.SetOrigin(origin)
 
-    direction = vtkimg.GetDirectionMatrix()
-    d = []
-    for y in range(3):
-        for x in range(3):
-            d.append(direction.GetElement(y, x))
-    sitkimg.SetDirection(d)
+    sitk_image = sitk.GetImageFromArray(npdata)
+    sitk_image.SetSpacing(image.GetSpacing())
+    sitk_image.SetOrigin(image.GetOrigin())
+    # By default, direction is identity.
 
-    return sitkimg
+    if vtk.vtkVersion.GetVTKMajorVersion() >= 9:
+        # Copy the direction matrix into a list
+        dir_mat = image.GetDirectionMatrix()
+        direction = [0] * 9
+        dir_mat.DeepCopy(direction, dir_mat)
+        sitk_image.SetDirection(direction)
+
+    return sitk_image
