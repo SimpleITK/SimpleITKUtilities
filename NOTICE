@@ -1,9 +1,7 @@
-SimpleITK
+SimpleITKUtilities
 
-Copyright 2010-2019 Insight Software Consortium
-Copyright 2020 NumFOCUS
+Copyright 2023 NumFOCUS
 
-This software is distributed under the
-Apache 2.0 License.
+This software is distributed under the Apache 2.0 License.
 
 See LICENSE file for details.
