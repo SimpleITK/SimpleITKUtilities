@@ -55,7 +55,7 @@ jobs:
         python -m pytest
 
 
-  pypi-publish:
+  publish:
     needs: test
     name: Upload release to PyPI
     runs-on: ubuntu-latest
@@ -81,9 +81,18 @@ jobs:
       with:
         name: python-packages
         path: dist
+    - name: Create Release and Upload
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh release create ${{ github.ref_name }} --repo  ${{ github.repository }} --verify-tag --generate-notes --title "Release ${{ github.ref_name }}"
+        gh release upload ${{ github.ref_name }} --repo  ${{ github.repository }} ${{ steps.download.outputs.download-path }}/tomojs_pytools*
 
-    - name: Publish package
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+
+    - name: PyPI Publish package
+      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
       # hash for release/v1.8
       uses: pypa/gh-action-pypi-publish@0bf742be3ebe032c25dd15117957dc15d0cfc38d
       with:
