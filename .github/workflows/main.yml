@@ -48,9 +48,12 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        python -m pip install -e .[vtk,dask] -r test/requirements.txt
+        python -m pip install -e .[vtk,dask,pyside] -r test/requirements.txt
+        sudo apt install libegl1
 
     - name: Test with pytest
+      env:
+        QT_QPA_PLATFORM: offscreen
       run: |
         python -m pytest
 

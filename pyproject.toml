@@ -22,6 +22,7 @@ dynamic = ["dependencies", "version"]
 [project.optional-dependencies]
 vtk=['vtk>=9.0']
 dask=['dask']
+pyside=['PySide6']
 
 [tool.setuptools]
 packages = ["SimpleITK.utilities"]
