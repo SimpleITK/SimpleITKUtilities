@@ -38,17 +38,3 @@ __all__ = [
     "resize",
     "__version__",
 ]
-
-from importlib.util import find_spec
-
-try:
-    find_spec("vtk")
-    from .vtk import sitk2vtk, vtk2sitk
-
-    __all__.extend(["sitk2vtk", "vtk2sitk"])
-
-    _has_vtk = True
-except ImportError:
-    _has_vtk = False
-
-del find_spec
