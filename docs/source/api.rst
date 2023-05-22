@@ -6,3 +6,6 @@ API
 
 .. automodule:: SimpleITK.utilities.dask
     :members:
+
+.. automodule:: SimpleITK.utilities.tf
+    :members:
