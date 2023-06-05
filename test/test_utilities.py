@@ -1,5 +1,8 @@
+import math
+
 import SimpleITK as sitk
 import SimpleITK.utilities as sitkutils
+from numpy.testing import assert_allclose
 
 
 def test_Logger():
@@ -131,3 +134,91 @@ def test_resize():
         -0.5,
         -0.5,
     )
+
+
+def test_resize_fill():
+    original_image = sitk.Image([16, 32], sitk.sitkFloat32) + 1.0
+
+    resized_image = sitkutils.resize(
+        image=original_image, new_size=[32, 32], fill=True, fill_value=10.0
+    )
+    assert resized_image.GetSize() == (32, 32)
+    assert resized_image.GetSpacing() == (1.0, 1.0)
+    assert resized_image.GetOrigin() == (-8.0, 0.0)
+    assert resized_image[0, 0] == 10.0
+    assert resized_image[15, 15] == 1.0
+    assert resized_image[31, 31] == 10.0
+
+    resized_image = sitkutils.resize(
+        image=original_image,
+        new_size=[32, 32],
+        fill=True,
+        use_nearest_extrapolator=True,
+    )
+    assert resized_image.GetSize() == (32, 32)
+    assert resized_image.GetSpacing() == (1.0, 1.0)
+    assert resized_image.GetOrigin() == (-8.0, 0.0)
+    assert resized_image[0, 0] == 1.0
+    assert resized_image[15, 15] == 1.0
+    assert resized_image[31, 31] == 1.0
+
+
+def test_resize_anti_aliasing():
+    original_image = sitk.Image([5, 5], sitk.sitkFloat32)
+    original_image[2, 2] = 1.0
+
+    resized_image = sitkutils.resize(
+        image=original_image,
+        new_size=[3, 3],
+        interpolator=sitk.sitkNearestNeighbor,
+        anti_aliasing_sigma=0,
+    )
+    assert resized_image.GetSize() == (3, 3)
+    assert_allclose(resized_image.GetSpacing(), (5 / 3, 5 / 3))
+    assert_allclose(resized_image.GetOrigin(), (1 / 3, 1 / 3))
+    assert resized_image[0, 0] == 0.0
+    assert resized_image[1, 1] == 1.0
+    assert resized_image[1, 0] == 0.0
+    assert resized_image[0, 1] == 0.0
+
+    resized_image = sitkutils.resize(
+        image=original_image,
+        new_size=[3, 3],
+        interpolator=sitk.sitkNearestNeighbor,
+        anti_aliasing_sigma=None,
+    )
+    assert resized_image.GetSize() == (3, 3)
+    assert_allclose(resized_image.GetSpacing(), (5 / 3, 5 / 3))
+    assert_allclose(resized_image.GetOrigin(), (1 / 3, 1 / 3))
+    assert math.isclose(resized_image[1, 1], 0.960833, abs_tol=1e-6)
+    assert resized_image[1, 0] == resized_image[0, 1]
+    assert resized_image[0, 0] == resized_image[2, 2]
+
+    resized_image = sitkutils.resize(
+        image=original_image,
+        new_size=[3, 3],
+        interpolator=sitk.sitkNearestNeighbor,
+        anti_aliasing_sigma=0.5,
+    )
+    assert resized_image.GetSize() == (3, 3)
+    assert_allclose(resized_image.GetSpacing(), (5 / 3, 5 / 3))
+    assert_allclose(resized_image.GetOrigin(), (1 / 3, 1 / 3))
+    assert math.isclose(resized_image[1, 1], 0.621714, abs_tol=1e-6)
+    assert math.isclose(resized_image[0, 0], 0, abs_tol=1e-6)
+    assert math.isclose(resized_image[1, 0], resized_image[0, 1], abs_tol=1e-8)
+    assert math.isclose(resized_image[0, 0], resized_image[2, 2], abs_tol=1e-8)
+
+    resized_image = sitkutils.resize(
+        image=original_image,
+        new_size=[3, 3],
+        interpolator=sitk.sitkNearestNeighbor,
+        anti_aliasing_sigma=[1.0, 0.0],
+    )
+    assert resized_image.GetSize() == (3, 3)
+    assert_allclose(resized_image.GetSpacing(), (5 / 3, 5 / 3))
+    assert_allclose(resized_image.GetOrigin(), (1 / 3, 1 / 3))
+    assert math.isclose(resized_image[1, 1], 0.400101, abs_tol=1e-6)
+    assert math.isclose(resized_image[0, 0], 0, abs_tol=1e-6)
+    assert resized_image[0, 0] == resized_image[2, 2]
+    assert resized_image[1, 0] == 0.0
+    assert resized_image[1, 2] == 0.0
