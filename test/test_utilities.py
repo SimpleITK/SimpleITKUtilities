@@ -136,6 +136,73 @@ def test_resize():
     )
 
 
+def test_resize_3d():
+    original_image = sitk.Image([128, 128, 128], sitk.sitkUInt8) + 50
+    resized_image = sitkutils.resize(image=original_image, new_size=[128, 128, 128])
+    assert resized_image.GetSize() == (128, 128, 128)
+    assert resized_image.GetSpacing() == (1.0, 1.0, 1.0)
+    assert resized_image.GetOrigin() == (0.0, 0.0, 0.0)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint(
+        (-0.5, -0.5, -0.5)
+    ) == (
+        -0.5,
+        -0.5,
+        -0.5,
+    )
+
+    resized_image = sitkutils.resize(image=original_image, new_size=[64, 64, 64])
+    assert resized_image.GetSize() == (64, 64, 64)
+    assert resized_image.GetSpacing() == (2.0, 2.0, 2.0)
+    assert resized_image.GetOrigin() == (0.5, 0.5, 0.5)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint(
+        (-0.5, -0.5, -0.5)
+    ) == (
+        -0.5,
+        -0.5,
+        -0.5,
+    )
+
+    resized_image = sitkutils.resize(image=original_image, new_size=[64, 32, 64])
+    assert resized_image.GetSize() == (64, 32, 64)
+    assert resized_image.GetSpacing() == (4.0, 4.0, 4.0)
+    assert resized_image.GetOrigin() == (-62.5, 1.5, -62.5)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint(
+        (-0.5, -0.5, -0.5)
+    ) == (
+        -64.5,
+        -0.5,
+        -64.5,
+    )
+
+    resized_image = sitkutils.resize(
+        image=original_image, new_size=[64, 64, 32], fill=False
+    )
+    assert resized_image.GetSize() == (32, 32, 32)
+    assert resized_image.GetSpacing() == (4.0, 4.0, 4.0)
+    assert resized_image.GetOrigin() == (1.5, 1.5, 1.5)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint(
+        (-0.5, -0.5, -0.5)
+    ) == (
+        -0.5,
+        -0.5,
+        -0.5,
+    )
+
+    resized_image = sitkutils.resize(
+        image=original_image, new_size=[32, 64, 64], isotropic=False
+    )
+    assert resized_image.GetSize() == (32, 64, 64)
+    assert resized_image.GetSpacing() == (4.0, 2.0, 2.0)
+    assert resized_image.GetOrigin() == (1.5, 0.5, 0.5)
+    assert resized_image.TransformContinuousIndexToPhysicalPoint(
+        (-0.5, -0.5, -0.5)
+    ) == (
+        -0.5,
+        -0.5,
+        -0.5,
+    )
+
+
 def test_resize_fill():
     original_image = sitk.Image([16, 32], sitk.sitkFloat32) + 1.0
 
