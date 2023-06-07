@@ -21,6 +21,7 @@ from .slice_by_slice import slice_by_slice
 from .make_isotropic import make_isotropic
 from .fft import fft_based_translation_initialization
 from .overlay_bounding_boxes import overlay_bounding_boxes
+from .resize import resize
 
 try:
     from ._version import version as __version__
@@ -34,6 +35,7 @@ __all__ = [
     "make_isotropic",
     "fft_based_translation_initialization",
     "overlay_bounding_boxes",
+    "resize",
     "__version__",
 ]
 
