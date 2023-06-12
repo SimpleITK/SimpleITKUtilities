@@ -28,6 +28,11 @@ def resize(
     isotropic. The physical extent of the image's data is retained in the new image, with the new image's spacing
     adjusted to achieve the desired size. The image is centered in the new image.
 
+    Anti-aliasing is enabled by default.
+
+    Runtime performance can be increased by disabling anti-aliasing ( anti_aliasing_sigma=0 ), and by setting
+    the interpolator to sitkNearestNeighbor at the cost of decreasing image quality.
+
     :param image: A SimpleITK image.
     :param new_size: The new image size in pixels.
     :param isotropic: If False, the original image is resized to fill the new image size by adjusting space. If True,
