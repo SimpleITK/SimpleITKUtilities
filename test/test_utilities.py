@@ -1,4 +1,5 @@
 import math
+import gc
 
 import SimpleITK as sitk
 import SimpleITK.utilities as sitkutils
@@ -37,7 +38,14 @@ def test_slice_by_slice():
 
 def test_sitktovtk():
     img = sitk.Image([10, 10, 5], sitk.sitkFloat32)
+    img = img + 42.0
     vtk_img = sitkutils.sitk2vtk(img)
+
+    # free the SimpleITK image's memory
+    img = None
+    gc.collect()
+
+    assert vtk_img.GetScalarComponentAsFloat(0, 0, 0, 0) == 42.0
 
 
 def test_fft_initialization():
