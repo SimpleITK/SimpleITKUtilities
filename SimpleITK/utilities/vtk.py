@@ -77,7 +77,7 @@ def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
         vtk_image.SetDirectionMatrix(direction)
 
     # Set pixel data
-    depth_array = vtknp.numpy_to_vtk(sitk.GetArrayViewFromImage(image).ravel())
+    depth_array = vtknp.numpy_to_vtk(sitk.GetArrayFromImage(image).ravel())
     depth_array.SetNumberOfComponents(ncomp)
     vtk_image.GetPointData().SetScalars(depth_array)
 
