@@ -4,6 +4,7 @@ import gc
 import SimpleITK as sitk
 import SimpleITK.utilities as sitkutils
 from numpy.testing import assert_allclose
+import vtk
 
 
 def test_Logger():
@@ -46,6 +47,21 @@ def test_sitktovtk():
     gc.collect()
 
     assert vtk_img.GetScalarComponentAsFloat(0, 0, 0, 0) == 42.0
+
+def test_vtktositk():
+    source = vtk.vtkImageSinusoidSource()
+    source.Update()
+    img = source.GetOutput()
+
+    sitkimg = sitkutils.vtk2sitk(img)
+    source = None
+    img = None
+    gc.collect()
+
+    assert sitkimg[0,0,0] == 255.0
+
+
+
 
 
 def test_fft_initialization():
