@@ -48,6 +48,7 @@ def test_sitktovtk():
 
     assert vtk_img.GetScalarComponentAsFloat(0, 0, 0, 0) == 42.0
 
+
 def test_vtktositk():
     source = vtk.vtkImageSinusoidSource()
     source.Update()
@@ -58,10 +59,7 @@ def test_vtktositk():
     img = None
     gc.collect()
 
-    assert sitkimg[0,0,0] == 255.0
-
-
-
+    assert sitkimg[0, 0, 0] == 255.0
 
 
 def test_fft_initialization():
