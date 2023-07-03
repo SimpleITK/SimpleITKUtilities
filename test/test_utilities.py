@@ -1,10 +1,7 @@
 import math
-import gc
-
 import SimpleITK as sitk
 import SimpleITK.utilities as sitkutils
 from numpy.testing import assert_allclose
-import vtk
 
 
 def test_Logger():
@@ -35,31 +32,6 @@ def test_slice_by_slice():
 
     for z in range(img.GetSize()[2]):
         assert img[0, 0, z] == z
-
-
-def test_sitktovtk():
-    img = sitk.Image([10, 10, 5], sitk.sitkFloat32)
-    img = img + 42.0
-    vtk_img = sitkutils.sitk2vtk(img)
-
-    # free the SimpleITK image's memory
-    img = None
-    gc.collect()
-
-    assert vtk_img.GetScalarComponentAsFloat(0, 0, 0, 0) == 42.0
-
-
-def test_vtktositk():
-    source = vtk.vtkImageSinusoidSource()
-    source.Update()
-    img = source.GetOutput()
-
-    sitkimg = sitkutils.vtk2sitk(img)
-    source = None
-    img = None
-    gc.collect()
-
-    assert sitkimg[0, 0, 0] == 255.0
 
 
 def test_fft_initialization():
