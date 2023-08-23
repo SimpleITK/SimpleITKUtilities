@@ -86,7 +86,7 @@ def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
 
 
 def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
-    """Convert a VTK image to a  SimpleITK image.
+    """Convert a VTK image to a SimpleITK image.
 
     :param image: Image to convert.
     :return: A SimpleITK image.
@@ -95,6 +95,10 @@ def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
     npdata = vtknp.vtk_to_numpy(sd)
     dims = list(image.GetDimensions())
     dims.reverse()
+    ncomp = image.GetNumberOfScalarComponents()
+    if ncomp>1:
+        dims.append(ncomp)
+
     npdata.shape = tuple(dims)
 
     sitk_image = sitk.GetImageFromArray(npdata)
