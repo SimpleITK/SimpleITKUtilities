@@ -25,11 +25,15 @@ logger = logging.getLogger(__name__)
 
 
 def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
-    """Convert a 2D or 3D SimpleITK image to a VTK image. VTK versions prior to
-    version 9 do not support a direction cosine matrix. If the installed
-    version is lower than that, the direction cosine matrix is ignored and
-    that information is lost. A warning is issued using the Python
-    logging mechanism.
+    """Convert a 2D or 3D SimpleITK image to a VTK image.
+
+    VTK versions prior to version 9 do not support a direction cosine
+    matrix. If the installed version is lower than that, the direction
+    cosine matrix is ignored and that information is lost. A warning
+    is issued using the Python logging mechanism.
+
+    VTK images are fundamentally 3D, so 2D images are made 3D with
+    a Z dimension of 1.
 
     :param image: Image to convert.
     :return: A VTK image.
@@ -88,6 +92,9 @@ def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
 def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
     """Convert a VTK image to a SimpleITK image.
 
+    Note that VTK images are fundamentally 3D, even if the Z
+    dimension is 1.
+
     :param image: Image to convert.
     :return: A SimpleITK image.
     """
@@ -96,7 +103,7 @@ def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
     dims = list(image.GetDimensions())
     dims.reverse()
     ncomp = image.GetNumberOfScalarComponents()
-    if ncomp>1:
+    if ncomp > 1:
         dims.append(ncomp)
 
     npdata.shape = tuple(dims)
