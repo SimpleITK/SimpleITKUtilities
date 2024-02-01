@@ -1,0 +1,29 @@
+{
+    "description": "<p>This repository contains a collection of utilities and integration tools which enhance the basic <a href=\"https://github.com/SimpleITK/SimpleITK\">SimpleITK</a> Python package functionality. Among other things, it enables data exchange between SimpleITK and other packages (e.g. <a href=\"https://vtk.org/\">vtk</a>, <a href=\"https://www.dask.org/\">dask</a>) and provides additional useful capabilities such as handling SimpleITK messages using standard Python logging.</p>",
+    "keywords": [
+        "Open Science",
+        "Open Source Software",
+        "Image Analysis",
+        "SimpleITK"
+    ],
+    "license": "Apache-2.0",
+    "title": "SimpleITK Utilities",
+    "upload_type": "software",
+    "creators": [
+        {
+            "affiliation": "National Institutes of Health",
+            "name": "Lowekamp, Bradley",
+            "orcid": "0000-0002-4579-5738"
+        },
+        {
+            "affiliation": "National Institutes of Health",
+            "name": "Chen, David T.",
+            "orcid": "0009-0002-8386-7840"
+        }
+        {
+            "affiliation": "National Institutes of Health",
+            "name": "Yaniv, Ziv",
+            "orcid": "0000-0003-0315-7727"
+        }
+    ]
+}
