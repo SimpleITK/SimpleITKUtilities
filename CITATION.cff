@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+title: "SimpleITK Utilities"
+message: "If you find this software useful in your work, support our efforts by citing it using the following information."
+type: software
+authors:
+  - family-names: Lowekamp
+    given-names: Bradley C.
+    orcid: 'https://orcid.org/0000-0002-4579-5738'
+  - family-names: Chen
+    given-names: David T.
+    orcid: 'https://orcid.org/0009-0002-8386-7840'
+  - family-names: Yaniv
+    given-names: Ziv
+    orcid: 'https://orcid.org/0000-0003-0315-7727'
+url: 'https://github.com/SimpleITK/SimpleITKUtilities'
