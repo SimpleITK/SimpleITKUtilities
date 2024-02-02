@@ -47,6 +47,7 @@ def test_fft_initialization():
 
 
 def test_fft_initialization2():
+    """Testing with different spacing and origin to force resampling."""
     fixed_img = sitk.Image([1024, 512], sitk.sitkUInt8)
 
     fixed_img[510:520, 255:265] = 10
@@ -58,6 +59,44 @@ def test_fft_initialization2():
 
     tx = sitkutils.fft_based_translation_initialization(fixed_img, moving_img)
     assert tx.GetOffset() == (-85.0, -105.0)
+
+
+def test_fft_initialization3():
+    """Testing with required fraction of overlapping pixels."""
+    fixed_img = sitk.Image([1024, 512], sitk.sitkUInt8)
+    fixed_img[0:10, 0:20] = 10
+    fixed_img[510:520, 255:265] = 10
+
+    moving_img = sitk.Image([1024, 512], sitk.sitkUInt8)
+    moving_img[425:435, 300:320] = 8
+
+    tx = sitkutils.fft_based_translation_initialization(
+        fixed_img,
+        moving_img,
+    )
+    assert tx.GetOffset() == (425, 300.0)
+
+    tx = sitkutils.fft_based_translation_initialization(
+        fixed_img, moving_img, required_fraction_of_overlapping_pixels=0.5
+    )
+    assert tx.GetOffset() == (-85.0, 50.0)
+
+
+def test_fft_initialization4():
+    """Testing with initial transform."""
+    fixed_img = sitk.Image([1024, 512], sitk.sitkUInt8)
+    fixed_img[510:520, 255:265] = 10
+
+    moving_img = sitk.Image([1024, 512], sitk.sitkUInt8)
+    moving_img.SetSpacing((10, 10))
+    moving_img[425:435, 300:310] = 8
+
+    initial_transform = sitk.Similarity2DTransform(10)
+
+    tx = sitkutils.fft_based_translation_initialization(
+        fixed_img, moving_img, initial_transform=initial_transform
+    )
+    assert tx.GetTranslation() == (-850.0, 450.0)
 
 
 def test_overlay_bounding_boxes():
