@@ -22,6 +22,7 @@ from .make_isotropic import make_isotropic
 from .fft import fft_based_translation_initialization
 from .overlay_bounding_boxes import overlay_bounding_boxes
 from .resize import resize
+from .histogram_equalization import histogram_equalization
 
 try:
     from ._version import version as __version__
@@ -35,6 +36,7 @@ __all__ = [
     "make_isotropic",
     "fft_based_translation_initialization",
     "overlay_bounding_boxes",
+    "histogram_equalization",
     "resize",
     "__version__",
 ]
