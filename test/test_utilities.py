@@ -2,6 +2,7 @@ import math
 import SimpleITK as sitk
 import SimpleITK.utilities as sitkutils
 from numpy.testing import assert_allclose
+import numpy as np
 
 
 def test_Logger():
@@ -322,3 +323,80 @@ def test_resize_anti_aliasing():
     assert resized_image[0, 0] == resized_image[2, 2]
     assert resized_image[1, 0] == 0.0
     assert resized_image[1, 2] == 0.0
+
+
+def test_histogram_equalization():
+    # Test with 0 image corner case
+    image = sitk.Image([32, 32], sitk.sitkFloat32)
+    image.SetSpacing([2.1, 3.2])
+    image.SetOrigin([0.5, 0.5])
+    image[:] = 1.0
+
+    equalized_image = sitkutils.histogram_equalization(
+        image,
+        number_of_histogram_levels=256,
+        number_of_match_points=32,
+        threshold_at_mean_intensity=False,
+    )
+    assert equalized_image.GetSize() == image.GetSize()
+    assert equalized_image.GetSpacing() == image.GetSpacing()
+    assert equalized_image.GetOrigin() == image.GetOrigin()
+    assert equalized_image.GetPixelID() == image.GetPixelID()
+    assert equalized_image.GetSize() == (32, 32)
+
+    # check that all pixels are equal
+    pixel_value = equalized_image[0, 0]
+    assert all([pv == pixel_value for pv in equalized_image])
+
+    # test with ramp image
+    image = sitk.Image([256, 1], sitk.sitkFloat32)
+    for i in range(image.GetSize()[0]):
+        image[i, 0] = i
+
+    equalized_image = sitkutils.histogram_equalization(
+        image,
+        number_of_histogram_levels=256,
+        number_of_match_points=32,
+        threshold_at_mean_intensity=False,
+    )
+    assert equalized_image.GetSize() == (256, 1)
+    assert equalized_image[0, 0] == 0.0
+    assert equalized_image[127, 0] == 127.0
+    assert equalized_image[255, 0] == 255.0
+
+    for i in range(image.GetSize()[0]):
+        image[i, 0] = -32.0 + i / 8.0
+
+    equalized_image = sitkutils.histogram_equalization(
+        image,
+        number_of_histogram_levels=256,
+        number_of_match_points=32,
+        threshold_at_mean_intensity=False,
+    )
+    assert equalized_image.GetSize() == (256, 1)
+    assert equalized_image[0, 0] == 0.0
+    assert equalized_image[127, 0] == 127.0
+    assert equalized_image[255, 0] == 255.0
+
+    for i in range(image.GetSize()[0]):
+        image[i, 0] = -32.0 + i**2 / 8.0
+
+    equalized_image = sitkutils.histogram_equalization(
+        image,
+        number_of_histogram_levels=256,
+        number_of_match_points=32,
+        threshold_at_mean_intensity=False,
+    )
+    assert np.isclose(equalized_image[0, 0], 0.0, atol=1e-6)
+    assert np.isclose(equalized_image[127, 0], 127.0, atol=1e-6)
+    assert np.isclose(equalized_image[255, 0], 255.0, atol=1e-6)
+
+    equalized_image = sitkutils.histogram_equalization(
+        image,
+        number_of_histogram_levels=128,
+        number_of_match_points=32,
+        threshold_at_mean_intensity=False,
+    )
+    assert np.isclose(equalized_image[0, 0], 0.0, atol=1e-6)
+    assert np.isclose(equalized_image[127, 0], 63.0, atol=0.5)
+    assert np.isclose(equalized_image[255, 0], 127.0, atol=1e-6)
