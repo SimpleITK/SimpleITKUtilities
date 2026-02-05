@@ -16,7 +16,6 @@
 #
 # ========================================================================
 
-from typing import Optional
 import logging
 
 import SimpleITK as sitk
@@ -37,14 +36,11 @@ def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
     VTK images are fundamentally 3D, so 2D images are made 3D with
     a Z dimension of 1.
 
-    Args:
-        image: SimpleITK image to convert (2D or 3D).
-
-    Returns:
-        A VTK image (vtkImageData) with the same data and metadata.
-
-    Raises:
-        ValueError: If the image is not 2D or 3D.
+    :param image: SimpleITK image to convert (2D or 3D).
+    :type image: sitk.Image
+    :returns: A VTK image (vtkImageData) with the same data and metadata.
+    :rtype: vtk.vtkImageData
+    :raises ValueError: If the image is not 2D or 3D.
     """
 
     size = list(image.GetSize())
@@ -106,11 +102,10 @@ def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
     dimension is 1. The direction matrix is only copied for VTK
     version 9 or higher.
 
-    Args:
-        image: VTK image (vtkImageData) to convert.
-
-    Returns:
-        A SimpleITK image with the same data and metadata.
+    :param image: VTK image (vtkImageData) to convert.
+    :type image: vtk.vtkImageData
+    :returns: A SimpleITK image with the same data and metadata.
+    :rtype: sitk.Image
     """
     # Extract scalar data and convert to numpy array
     scalar_data = image.GetPointData().GetScalars()
