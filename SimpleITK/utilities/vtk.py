@@ -16,8 +16,9 @@
 #
 # ========================================================================
 
-import SimpleITK as sitk
 import logging
+
+import SimpleITK as sitk
 import vtk
 import vtk.util.numpy_support as vtknp
 
@@ -35,14 +36,17 @@ def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
     VTK images are fundamentally 3D, so 2D images are made 3D with
     a Z dimension of 1.
 
-    :param image: Image to convert.
-    :return: A VTK image.
+    :param image: SimpleITK image to convert (2D or 3D).
+    :type image: sitk.Image
+    :returns: A VTK image (vtkImageData) with the same data and metadata.
+    :rtype: vtk.vtkImageData
+    :raises ValueError: If the image is not 2D or 3D.
     """
 
     size = list(image.GetSize())
     if len(size) > 3:
         raise ValueError(
-            "Conversion only supports 2D and 3D images, got {len(size)}D image"
+            f"Conversion only supports 2D and 3D images, got {len(size)}D image"
         )
 
     origin = image.GetOrigin()
@@ -73,6 +77,8 @@ def sitk2vtk(image: sitk.Image) -> vtk.vtkImageData:
     vtk_image.SetSpacing(spacing)
     vtk_image.SetOrigin(origin)
     vtk_image.SetExtent(0, size[0] - 1, 0, size[1] - 1, 0, size[2] - 1)
+
+    # Set direction matrix if supported by VTK version
     if vtk.vtkVersion.GetVTKMajorVersion() < 9:
         logger.warning(
             "VTK version <9 does not support direction matrix which is ignored"
@@ -93,13 +99,19 @@ def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
     """Convert a VTK image to a SimpleITK image.
 
     Note that VTK images are fundamentally 3D, even if the Z
-    dimension is 1.
+    dimension is 1. The direction matrix is only copied for VTK
+    version 9 or higher.
 
-    :param image: Image to convert.
-    :return: A SimpleITK image.
+    :param image: VTK image (vtkImageData) to convert.
+    :type image: vtk.vtkImageData
+    :returns: A SimpleITK image with the same data and metadata.
+    :rtype: sitk.Image
     """
-    sd = image.GetPointData().GetScalars()
-    npdata = vtknp.vtk_to_numpy(sd)
+    # Extract scalar data and convert to numpy array
+    scalar_data = image.GetPointData().GetScalars()
+    npdata = vtknp.vtk_to_numpy(scalar_data)
+
+    # VTK uses C-order (XYZ), SimpleITK uses Fortran-order (ZYX)
     dims = list(image.GetDimensions())
     dims.reverse()
     ncomp = image.GetNumberOfScalarComponents()
@@ -108,13 +120,14 @@ def vtk2sitk(image: vtk.vtkImageData) -> sitk.Image:
 
     npdata.shape = tuple(dims)
 
+    # Create SimpleITK image and set metadata
     sitk_image = sitk.GetImageFromArray(npdata)
     sitk_image.SetSpacing(image.GetSpacing())
     sitk_image.SetOrigin(image.GetOrigin())
-    # By default, direction is identity.
 
+    # Set direction matrix if supported by VTK version
+    # By default, direction is identity
     if vtk.vtkVersion.GetVTKMajorVersion() >= 9:
-        # Copy the direction matrix into a list
         dir_mat = image.GetDirectionMatrix()
         direction = [0] * 9
         dir_mat.DeepCopy(direction, dir_mat)
