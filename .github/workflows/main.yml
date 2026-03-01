@@ -79,7 +79,7 @@ jobs:
         ls -la dist
     - name: Upload package
       if: github.event_name == 'push'
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: python-packages
         path: dist
